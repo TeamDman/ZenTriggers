@@ -1,11 +1,10 @@
 package zentriggers.zentriggers.actions;
 
 import crafttweaker.annotations.ZenRegister;
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import zentriggers.zentriggers.Transformer;
 import zentriggers.zentriggers.TriggerDirector;
 import zentriggers.zentriggers.TriggerType;
 
@@ -14,19 +13,19 @@ import java.util.Arrays;
 @ZenRegister
 @ZenClass("mods.zentriggers.actions.DimensionChangedAction")
 public class DimensionChangedAction implements IAction<PlayerEvent.PlayerChangedDimensionEvent> {
-	public String command;
-	public int[]  dimFrom;
-	public int[]  dimTo;
+	public final String command;
+	public final int[]  dimFrom;
+	public final int[]  dimTo;
 
-	public DimensionChangedAction(int[] dimFrom, int[] dimTo, String command) {
+	public DimensionChangedAction(String command, int[] dimFrom, int[] dimTo) {
+		this.command = command;
 		this.dimFrom = dimFrom;
 		this.dimTo = dimTo;
-		this.command = command;
 	}
 
 	@ZenMethod
-	public static void create(int[] dimFrom, int[] dimTo, String command) {
-		TriggerDirector.addAction(new DimensionChangedAction(dimFrom, dimTo, command));
+	public static void create(String command, int[] dimFrom, int[] dimTo) {
+		TriggerDirector.addAction(new DimensionChangedAction(command, dimFrom, dimTo));
 	}
 
 	@Override
@@ -39,8 +38,12 @@ public class DimensionChangedAction implements IAction<PlayerEvent.PlayerChanged
 		if (Arrays.stream(dimFrom).noneMatch(dim -> dim == arg.fromDim) || Arrays.stream(dimTo).noneMatch(dim -> dim == arg.toDim))
 			return;
 
-		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-		server.commandManager.executeCommand(server, command);
+		transformAndPostCommand(command, arg);
 		System.out.println("Triggered command \"" + command + "\" on player " + arg.player + " moving from dimension " + arg.fromDim + " to " + arg.toDim + ".");
+	}
+
+	@Override
+	public String transformCommand(String command, PlayerEvent.PlayerChangedDimensionEvent arg) {
+		return Transformer.transformPlayer(command, arg.player);
 	}
 }

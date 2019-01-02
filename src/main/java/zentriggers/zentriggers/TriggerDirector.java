@@ -3,6 +3,7 @@ package zentriggers.zentriggers;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import crafttweaker.annotations.ZenRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import zentriggers.zentriggers.actions.IAction;
