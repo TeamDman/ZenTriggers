@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "https://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+
+version = modVersion
+group = modGroup
+archivesBaseName = "${modBaseName}-${majorVersion}"
+
+minecraft {
+    version = project.forgeVersion
+    runDir = "run"
+    mappings = project.mcpVersion
+    clientRunArgs += "--username=ZenTriggers"
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://dvs1.progwml6.com/files/maven" } // JEI
+    maven { url "http://tehnut.info/maven" } // HWYLA
+    maven { url "http://maven.blamejared.com/" } // crafttweaker
+}
+
+dependencies {
+    deobfCompile "mezz.jei:jei_${minecraftVersion}:${jeiVersion}"
+    deobfCompile "mcp.mobius.waila:Hwyla:${hwylaVersion}"
+    compile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.+"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand "version": project.version, "mcversion": project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
