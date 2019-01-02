@@ -35,6 +35,7 @@ public class DimensionChangedAction implements IAction<PlayerEvent.PlayerChanged
 
 	@Override
 	public void accept(PlayerEvent.PlayerChangedDimensionEvent arg) {
+		//todo: empty list is wildcard instead of exclude all
 		if (Arrays.stream(dimFrom).noneMatch(dim -> dim == arg.fromDim) || Arrays.stream(dimTo).noneMatch(dim -> dim == arg.toDim))
 			return;
 
