@@ -15,10 +15,11 @@ public class TriggerDirector {
 	}
 
 	public static void handleTrigger(TriggerType type, Object arg) {
-		if (type.argType.isInstance(arg)) {
+		if (!type.argType.isInstance(arg)) {
 			System.out.println("Trigger " + type + " was invoked with " + arg +" (an invalid argument!)");
 			return;
 		}
+		System.out.println("Executing trigger for " + type);
 		//noinspection unchecked
 		actions.get(type).forEach(action -> action.accept(arg));
 	}

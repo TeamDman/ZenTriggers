@@ -11,8 +11,8 @@ import zentriggers.zentriggers.TriggerType;
 
 import java.util.Arrays;
 
-@ZenClass("mods.zentriggers.actions.DimensionChangedAction")
 @ZenRegister
+@ZenClass("mods.zentriggers.actions.DimensionChangedAction")
 public class DimensionChangedAction implements IAction<PlayerEvent.PlayerChangedDimensionEvent> {
 	public String command;
 	public int[]  dimFrom;
