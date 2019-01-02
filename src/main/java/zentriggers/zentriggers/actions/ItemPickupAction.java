@@ -55,6 +55,7 @@ public class ItemPickupAction implements IAction<PlayerEvent.ItemPickupEvent> {
 	@Override
 	public void accept(PlayerEvent.ItemPickupEvent arg) {
 		// beautiful
+		//todo: accept wildcard stacksize?
 		if (restriction == RestrictionType.WHITELIST ?
 				Arrays.stream(stackList).noneMatch(s ->
 						ItemStack.areItemStacksEqual(s, arg.getStack())) :
