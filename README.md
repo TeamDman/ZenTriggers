@@ -3,6 +3,7 @@ A mod that allows for pack creators to set up custom actions in response to cert
 
 [Example video](https://streamable.com/ce27v)
 
+[PredicateBuilder 'docs'](https://github.com/TeamDman/ZenTriggers/blob/master/src/main/java/zentriggers/zentriggers/PredicateBuilder.java)
 ## Example Script
 ```ZenScript
 import mods.zentriggers.PredicateBuilder;
