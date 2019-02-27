@@ -3,6 +3,10 @@ A mod that allows for pack creators to set up custom actions in response to cert
 
 [Example video](https://streamable.com/ce27v)
 
+[ILivingEvent](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/event/ILivingEvent.java)
+[IEntityLivingBase](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/entity/IEntityLivingBase.java)
+[IEntity](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/entity/IEntity.java)
+
 [PredicateBuilder 'docs'](https://github.com/TeamDman/ZenTriggers/blob/master/src/main/java/zentriggers/zentriggers/PredicateBuilder.java)
 ## Example Script
 ```ZenScript
