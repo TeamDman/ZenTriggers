@@ -9,6 +9,7 @@ A mod that allows for pack creators to set up custom actions in response to cert
 import mods.zentriggers.PredicateBuilder;
 import mods.zentriggers.Handler;
 import mods.zentriggers.events.EntityLivingUpdateEvent;
+import crafttweaker.entity.IEntity;
 import crafttweaker.block.IMaterial;
 import crafttweaker.block.IBlock;
 import crafttweaker.block.IBlockState;
@@ -39,6 +40,16 @@ Handler.onEntityUpdate(
         .isInBlockState(<blockstate:minecraft:water:level=7> as IBlockState)
     ,function(event as EntityLivingUpdateEvent) {
         event.entityLivingBase.health=7;
+    }
+);
+
+Handler.onEntityUpdate(
+    PredicateBuilder.create()
+        .isInstanceOf(<entity:minecraft:chicken>)
+        .isNthTick(10)
+        .isInBlockState(<blockstate:minecraft:water:level=0> as IBlockState)
+    ,function(event as EntityLivingUpdateEvent) {
+        <entity:minecraft:cow>.spawnEntity(event.entity.world,  event.entity.position);
     }
 );
 ```

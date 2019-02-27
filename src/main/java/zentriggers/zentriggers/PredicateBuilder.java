@@ -4,6 +4,8 @@ import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.block.IBlock;
 import crafttweaker.api.block.IBlockState;
 import crafttweaker.api.block.IMaterial;
+import crafttweaker.api.entity.IEntity;
+import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -17,13 +19,13 @@ import java.util.function.Predicate;
 @ZenClass(ZenTriggers.ZEN_PACKAGE + ".PredicateBuilder")
 @ZenRegister
 public class PredicateBuilder {
-	private static final Random                                               rand       = new Random();
+	private static final Random rand = new Random();
 
 	static {
 		rand.setSeed(1);
 	}
 
-	private final        ArrayDeque<Predicate<LivingEvent.LivingUpdateEvent>> predicates = new ArrayDeque<>();
+	private final ArrayDeque<Predicate<LivingEvent.LivingUpdateEvent>> predicates = new ArrayDeque<>();
 
 	@ZenMethod
 	public static PredicateBuilder create() {
@@ -74,6 +76,12 @@ public class PredicateBuilder {
 	@ZenMethod
 	public PredicateBuilder isInBlockState(IBlockState state) {
 		predicates.push((event) -> state.matches(CraftTweakerMC.getBlockState(event.getEntityLiving().world.getBlockState(event.getEntityLiving().getPosition()))));
+		return this;
+	}
+
+	@ZenMethod
+	public PredicateBuilder isInstanceOf(IEntityDefinition entity) {
+		predicates.push((event) -> event.getEntityLiving().getName().equals(entity.getName()));
 		return this;
 	}
 }
