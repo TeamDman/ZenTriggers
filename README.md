@@ -10,6 +10,8 @@ A mod that allows for pack creators to set up custom actions in response to cert
 [PredicateBuilder 'docs'](https://github.com/TeamDman/ZenTriggers/blob/master/src/main/java/zentriggers/zentriggers/PredicateBuilder.java)
 
 NOTE: isInMaterial predicate checks at the entity's eye height, not foot level. This might be unintuitive, but it's the method used to check if a player's vision is obscured by lava/water
+
+NOTE: The predicates are short circuit evaluated in the order that they are built in, using the least expensive predicates first will be good for performance.
 ## Example Script
 ```JavaScript
 import mods.zentriggers.PredicateBuilder;
