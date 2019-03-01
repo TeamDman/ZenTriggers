@@ -2,6 +2,7 @@
 A mod that allows for pack creators to set up custom actions in response to certain triggers.
 
 [Example video](https://streamable.com/ce27v)
+[More example](https://streamable.com/zb9d9)
 
 [ILivingEvent](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/event/ILivingEvent.java)
 [IEntityLivingBase](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/entity/IEntityLivingBase.java)
@@ -47,7 +48,7 @@ Handler.onEntityUpdate(
         .isRandom(0.2)
         .isInBlockState(<blockstate:minecraft:water:level=7> as IBlockState)
     ,function(event as EntityLivingUpdateEvent) {
-        event.entityLivingBase.health=7;
+        <entity:minecraft:cow>.spawnEntity(event.entity.world,  event.entity.position);
     }
 );
 
@@ -57,7 +58,18 @@ Handler.onEntityUpdate(
         .isNthTick(10)
         .isInBlockState(<blockstate:minecraft:water:level=0> as IBlockState)
     ,function(event as EntityLivingUpdateEvent) {
-        <entity:minecraft:cow>.spawnEntity(event.entity.world,  event.entity.position);
+        print("a");
+        event.entity.world.spawnEntity(<minecraft:stick>.createEntityItem(event.entity.world,  event.entity.position));
+        print("b");
+    }
+);
+
+Handler.onEntityUpdate(
+    PredicateBuilder.create()
+        .isNthTick(20)
+        .isInBlockArea(<blockstate:minecraft:lava>.block,3,3,1,4)
+    ,function(event as EntityLivingUpdateEvent) {
+        event.entityLivingBase.health = 5;
     }
 );
 ```
