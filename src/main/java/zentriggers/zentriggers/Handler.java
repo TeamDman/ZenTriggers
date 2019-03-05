@@ -23,10 +23,17 @@ public class Handler {
 	public static void onEntityUpdateRaw(LivingEvent.LivingUpdateEvent event) {
 		handlers.computeIfAbsent(LivingEvent.LivingUpdateEvent.class, (k) -> new HashMap<>()).forEach((predicates, handler) -> {
 			if (predicates.test(event)) {
-				handler.handle(new MCLivingUpdateEvent(event));
+				try {
+					handler.handle(new MCLivingUpdateEvent(event));
+				} catch (Throwable t) {
+					System.out.println("Error occurred invoking handler for onEntityUpdate");
+					t.printStackTrace();
+				}
 			}
 		});
 	}
+
+
 
 	@ZenMethod
 	public static void onEntityUpdate(PredicateBuilder builder, IEventHandler<MCLivingUpdateEvent> handler) {

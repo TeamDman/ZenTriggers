@@ -122,8 +122,20 @@ public class PredicateBuilder {
 	}
 
 	@ZenMethod
+	public PredicateBuilder isNotNull() {
+		predicates.push((event) -> event != null && event.getEntityLiving() != null && event.getEntity() != null && event.getEntity().world != null);
+		return this;
+	}
+
+	@ZenMethod
 	public PredicateBuilder isInstanceOf(IEntityDefinition entity) {
-		predicates.push((event) -> event.getEntityLiving().getName().equals(entity.getName()));
+		if (entity == null || entity.getName() == null) {
+			System.out.println("Provided entity is null or has no name, can't add isInstanceOf to the chain!");
+			predicates.push((__)->false);
+			return this;
+		}
+
+		predicates.push((event) -> event != null && event.getEntityLiving() != null && event.getEntityLiving().getName().equalsIgnoreCase(entity.getName()));
 		return this;
 	}
 }
