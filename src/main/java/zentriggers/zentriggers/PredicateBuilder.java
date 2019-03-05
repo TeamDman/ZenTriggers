@@ -135,7 +135,7 @@ public class PredicateBuilder {
 			return this;
 		}
 
-		predicates.push((event) -> event != null && event.getEntityLiving() != null && event.getEntityLiving().getName().equalsIgnoreCase(entity.getName()));
+		predicates.push((event) -> event != null && event.getEntityLiving() != null && entity.getName().equalsIgnoreCase(event.getEntityLiving().getName()));
 		return this;
 	}
 }
