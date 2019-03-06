@@ -7,6 +7,7 @@ import crafttweaker.api.block.IMaterial;
 import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -14,6 +15,7 @@ import stanhebben.zenscript.annotations.ZenMethod;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -135,7 +137,15 @@ public class PredicateBuilder {
 			return this;
 		}
 
-		predicates.push((event) -> event != null && event.getEntityLiving() != null && entity.getName().equalsIgnoreCase(event.getEntityLiving().getName()));
+		//noinspection ConstantConditions
+		predicates.push((event) -> EntityList.getKey(event.getEntity()) != null && entity.getId().equalsIgnoreCase(EntityList.getKey(event.getEntity()).toString()));
+		return this;
+	}
+
+	@ZenMethod
+	public PredicateBuilder isInstanceOf(String name) {
+		//noinspection ConstantConditions
+		predicates.push((event) -> EntityList.getKey(event.getEntity()) != null && EntityList.getKey(event.getEntity()).toString().equalsIgnoreCase(name));
 		return this;
 	}
 }
