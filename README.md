@@ -16,12 +16,15 @@ NOTE: The predicates are short circuit evaluated in the order that they are buil
 ## Example Script
 ```JavaScript
 import mods.zentriggers.PredicateBuilder;
+import mods.zentriggers.Profiler;
 import mods.zentriggers.Handler;
 import mods.zentriggers.events.EntityLivingUpdateEvent;
 import crafttweaker.entity.IEntity;
 import crafttweaker.block.IMaterial;
 import crafttweaker.block.IBlock;
 import crafttweaker.block.IBlockState;
+
+Profiler.start("ZenSummoning");
 
 Handler.onEntityUpdate(
     PredicateBuilder.create()
@@ -46,6 +49,7 @@ Handler.onEntityUpdate(
         .isInDimension(-1)
         .negateLatest()
         .isRandom(0.2)
+        .isInstanceOf("minecraft:chicken")
         .isInBlockState(<blockstate:minecraft:water:level=7> as IBlockState)
     ,function(event as EntityLivingUpdateEvent) {
         <entity:minecraft:cow>.spawnEntity(event.entity.world,  event.entity.position);
@@ -72,4 +76,8 @@ Handler.onEntityUpdate(
         event.entityLivingBase.health = 5;
     }
 );
+
+print("ZenSummoning took " + Profiler.finish("ZenSummoning"));
+
+
 ```
