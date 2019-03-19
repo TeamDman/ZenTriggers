@@ -25,6 +25,8 @@ minecraft {
     version = project.forgeVersion
     runDir = "run"
     mappings = project.mcpVersion
+    replace "@VERSION@", project.version
+    replaceIn "ZenTriggers.java"
     clientRunArgs += "--username=ZenTriggers"
 }
 
