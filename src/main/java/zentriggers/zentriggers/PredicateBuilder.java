@@ -94,6 +94,12 @@ public class PredicateBuilder {
 	}
 
 	@ZenMethod
+	public PredicateBuilder isRemote() {
+		predicates.push((entity) -> entity.getEntityWorld().isRemote);
+		return this;
+	}
+
+	@ZenMethod
 	public PredicateBuilder isInBlockState(IBlockState state) {
 		predicates.push((entity) -> state.matches(CraftTweakerMC.getBlockState(entity.world.getBlockState(entity.getPosition()))));
 		return this;
