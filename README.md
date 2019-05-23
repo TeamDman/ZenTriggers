@@ -13,6 +13,8 @@ A mod that allows for pack creators to set up custom actions in response to cert
 NOTE: isInMaterial predicate checks at the entity's eye height, not foot level. This might be unintuitive, but it's the method used to check if a player's vision is obscured by lava/water
 
 NOTE: The predicates are short circuit evaluated in the order that they are built in, using the least expensive predicates first will be good for performance.
+
+NOTE: Actions like spawning items should only be done on server side. Use `.isRemote().negateLatest()` in the predicate builder to ensure this.
 ## Example Script
 ```JavaScript
 import mods.zentriggers.PredicateBuilder;
