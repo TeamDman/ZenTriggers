@@ -2,10 +2,9 @@ package zentriggers.zentriggers;
 
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.util.IEventHandler;
-import net.minecraft.entity.EntityList;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -30,19 +29,23 @@ public class Handler {
 			return;
 		if (rawHandlers.isEmpty())
 			return;
-		e.world.getLoadedEntityList().forEach(entity -> {
+		HashMap<IEventHandler<MCLivingUpdateEvent>, Entity> toTick = new HashMap<>();
+		e.world.loadedEntityList.forEach(entity -> {
 			rawHandlers.computeIfAbsent(LivingEvent.LivingUpdateEvent.class, (k) -> new HashMap<>()).forEach((predicates, handler) -> {
 				if (!(entity instanceof EntityLivingBase))
 					return;
 				if (predicates.test(entity)) {
-					try {
-						handler.handle(new MCLivingUpdateEvent(new LivingEvent.LivingUpdateEvent((EntityLivingBase) entity)));
-					} catch (Throwable t) {
-						System.out.println("Error occurred invoking raw handler for onEntityUpdateRaw");
-						t.printStackTrace();
-					}
+					toTick.put(handler, entity);
 				}
 			});
+		});
+		toTick.forEach((handler, entity) -> {
+			try {
+				handler.handle(new MCLivingUpdateEvent(new LivingEvent.LivingUpdateEvent((EntityLivingBase) entity)));
+			} catch (Throwable t) {
+				System.out.println("Error occurred invoking raw handler for onEntityUpdateRaw");
+				t.printStackTrace();
+			}
 		});
 	}
 
