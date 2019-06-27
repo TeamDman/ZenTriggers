@@ -12,7 +12,9 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import zentriggers.zentriggers.wrappers.MCLivingUpdateEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -22,30 +24,35 @@ import java.util.Map;
 public class Handler {
 	private static Map<Class<? extends LivingEvent.LivingUpdateEvent>, Map<PredicateBuilder, IEventHandler<MCLivingUpdateEvent>>> handlers = new HashMap<>();
 	private static Map<Class<? extends LivingEvent.LivingUpdateEvent>, Map<PredicateBuilder, IEventHandler<MCLivingUpdateEvent>>> rawHandlers = new HashMap<>();
+	private static int rawInterval = 10;
 
 	@SubscribeEvent
 	public static void onTick(TickEvent.WorldTickEvent e) {
+		if (e.phase != TickEvent.Phase.START)
+			return;
 		if (e.world == null)
+			return;
+		if (e.world.getTotalWorldTime() % rawInterval != 0)
 			return;
 		if (rawHandlers.isEmpty())
 			return;
-		HashMap<IEventHandler<MCLivingUpdateEvent>, Entity> toTick = new HashMap<>();
-		e.world.loadedEntityList.forEach(entity -> {
+		List<Entity> entities;
+		synchronized (e.world.loadedEntityList) {
+			entities = new ArrayList<>(e.world.loadedEntityList);
+		}
+		entities.forEach(entity -> {
 			rawHandlers.computeIfAbsent(LivingEvent.LivingUpdateEvent.class, (k) -> new HashMap<>()).forEach((predicates, handler) -> {
 				if (!(entity instanceof EntityLivingBase))
 					return;
 				if (predicates.test(entity)) {
-					toTick.put(handler, entity);
+					try {
+						handler.handle(new MCLivingUpdateEvent(new LivingEvent.LivingUpdateEvent((EntityLivingBase) entity)));
+					} catch (Throwable t) {
+						System.out.println("Error occurred invoking raw handler for onEntityUpdateRaw");
+						t.printStackTrace();
+					}
 				}
 			});
-		});
-		toTick.forEach((handler, entity) -> {
-			try {
-				handler.handle(new MCLivingUpdateEvent(new LivingEvent.LivingUpdateEvent((EntityLivingBase) entity)));
-			} catch (Throwable t) {
-				System.out.println("Error occurred invoking raw handler for onEntityUpdateRaw");
-				t.printStackTrace();
-			}
 		});
 	}
 
@@ -77,5 +84,10 @@ public class Handler {
 		if (builder == null || handler == null)
 			System.out.println("Builder or handler null trying to register ZenTriggers event, skipping. [Builder: " + builder + ", Handler: " +handler + "]");
 		rawHandlers.computeIfAbsent(LivingEvent.LivingUpdateEvent.class, (k) -> new HashMap<>()).put(builder, handler);
+	}
+
+	@ZenMethod
+	public static void setRawInterval(int interval) {
+		rawInterval = interval;
 	}
 }

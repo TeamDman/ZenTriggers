@@ -16,7 +16,7 @@ NOTE: The predicates are short circuit evaluated in the order that they are buil
 
 NOTE: Actions like spawning items should only be done on server side. Use `.isRemote().negateLatest()` in the predicate builder to ensure this.
 ## Example Script
-```JavaScript
+```zenscript
 import mods.zentriggers.PredicateBuilder;
 import mods.zentriggers.Profiler;
 import mods.zentriggers.Handler;
@@ -78,6 +78,30 @@ Handler.onEntityUpdate(
         event.entityLivingBase.health = 5;
     }
 );
+
+Handler.setRawInterval(10);
+Handler.onEntityUpdateRaw(
+		PredicateBuilder.create() // no isNthTick needed, raw events are limited by the raw interval
+		    .isRemote()
+		    .negateLatest()
+			.isRandom(0.1)
+			.isInstanceOf("minecraft:pig")
+
+		,function(event as EntityLivingUpdateEvent){
+            val item = <minecraft:diamond>;
+            if(isNull(item)) {
+                print("item is null in event");
+                return;
+            }
+            if(isNull(event.entity)){
+                print("Entity is null in event");
+                return;
+            }
+            event.entity.world.spawnEntity(item.createEntityItem(event.entity.world, event.entity.position));
+            event.entityLivingBase.health -= 5;
+	    }
+);
+
 
 print("ZenSummoning took " + Profiler.finish("ZenSummoning"));
 
