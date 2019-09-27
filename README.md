@@ -8,13 +8,16 @@ A mod that allows for pack creators to set up custom actions in response to cert
 [IEntityLivingBase](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/entity/IEntityLivingBase.java)
 [IEntity](https://github.com/CraftTweaker/CraftTweaker/blob/1.12/CraftTweaker2-API/src/main/java/crafttweaker/api/entity/IEntity.java)
 
-[PredicateBuilder 'docs'](https://github.com/TeamDman/ZenTriggers/blob/master/src/main/java/zentriggers/zentriggers/PredicateBuilder.java)
+[EntityUpdatePredicateBuilder](https://github.com/TeamDman/ZenTriggers/blob/master/src/main/java/zentriggers/zentriggers/EntityUpdatePredicateBuilder.java)
+[WorldTickPredicateBuilder](https://github.com/TeamDman/ZenTriggers/blob/master/src/main/java/zentriggers/zentriggers/WorldTickPredicateBuilder.java)
 
 NOTE: isInMaterial predicate checks at the entity's eye height, not foot level. This might be unintuitive, but it's the method used to check if a player's vision is obscured by lava/water
 
 NOTE: The predicates are short circuit evaluated in the order that they are built in, using the least expensive predicates first will be good for performance.
 
 NOTE: Actions like spawning items should only be done on server side. Use `.isRemote().negateLatest()` in the predicate builder to ensure this.
+
+NOTE: Now that there is also a WorldTickHandler, the original handler is now importable as EntityUpdateHandler if you want. 
 ## Example Script
 ```zenscript
 import mods.zentriggers.PredicateBuilder;
@@ -106,4 +109,24 @@ Handler.onEntityUpdateRaw(
 print("ZenSummoning took " + Profiler.finish("ZenSummoning"));
 
 
+```
+
+
+## Example script using world tick event
+
+```zs
+import mods.zentriggers.events.WorldTickEvent;
+import mods.zentriggers.WorldTickHandler;
+import mods.zentriggers.WorldTickPredicateBuilder;
+import mods.zentriggers.world.World;
+
+WorldTickHandler.onWorldTick(
+    WorldTickPredicateBuilder.create()
+        .isDay()
+        .negateLatest()
+    ,function(event as WorldTickEvent) {
+        event.world.worldTime = (24000 as long);
+    }
+);
+WorldTickHandler.setRawInterval(200);
 ```
