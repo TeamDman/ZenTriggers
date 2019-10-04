@@ -58,4 +58,10 @@ public class WorldTickPredicateBuilder {
 		predicates.push(World::isDaytime);
 		return this;
 	}
+
+	@ZenMethod
+	public WorldTickPredicateBuilder isDimension(int id) {
+		predicates.push(world -> world.provider.getDimension() == id);
+		return this;
+	}
 }

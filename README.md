@@ -128,5 +128,15 @@ WorldTickHandler.onWorldTick(
         event.world.worldTime = (24000 as long);
     }
 );
+
+WorldTickHandler.onWorldLoadTick(
+    WorldTickPredicateBuilder.create()
+        .isDimension(0)
+    ,function(event as WorldTickEvent) {
+        event.world.worldTime = (34000 as long);
+    }
+);
+// there is also a onWorldUnloadTick method.
+
 WorldTickHandler.setRawInterval(200);
 ```
