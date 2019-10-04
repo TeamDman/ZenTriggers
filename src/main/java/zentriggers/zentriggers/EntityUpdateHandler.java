@@ -75,14 +75,14 @@ public class EntityUpdateHandler {
 	@ZenMethod
 	public static void onEntityUpdate(EntityUpdatePredicateBuilder builder, IEventHandler<MCLivingUpdateEvent> handler) {
 		if (builder == null || handler == null)
-			System.out.println("Builder or handler null trying to register ZenTriggers event, skipping. [Builder: " + builder + ", Handler: " +handler + "]");
+			System.out.println("Builder or handler null trying to register ZenTriggers onEntityUpdate event, skipping. [Builder: " + builder + ", Handler: " +handler + "]");
 		handlers.put(builder, handler);
 	}
 
 	@ZenMethod
 	public static void onEntityUpdateRaw(EntityUpdatePredicateBuilder builder, IEventHandler<MCLivingUpdateEvent> handler) {
 		if (builder == null || handler == null)
-			System.out.println("Builder or handler null trying to register ZenTriggers event, skipping. [Builder: " + builder + ", Handler: " +handler + "]");
+			System.out.println("Builder or handler null trying to register ZenTriggers onEntityUpdateRaw event, skipping. [Builder: " + builder + ", Handler: " +handler + "]");
 		rawHandlers.put(builder, handler);
 	}
 
