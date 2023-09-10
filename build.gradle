@@ -33,13 +33,10 @@ minecraft {
 repositories {
     mavenCentral()
     maven { url "http://dvs1.progwml6.com/files/maven" } // JEI
-    maven { url "http://tehnut.info/maven" } // HWYLA
     maven { url "http://maven.blamejared.com/" } // crafttweaker
 }
 
 dependencies {
-    deobfCompile "mezz.jei:jei_${minecraftVersion}:${jeiVersion}"
-    deobfCompile "mcp.mobius.waila:Hwyla:${hwylaVersion}"
     compile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.+"
 }
 

@@ -26,6 +26,10 @@ public class EntityUpdateHandler {
 	private static Map<EntityUpdatePredicateBuilder, IEventHandler<MCLivingUpdateEvent>> rawHandlers = new HashMap<>();
 	private static int rawInterval = 10;
 
+	public static int getRawInterval() {
+		return rawInterval;
+	}
+
 	@SubscribeEvent
 	public static void onTick(TickEvent.WorldTickEvent e) {
 		if (e.phase != TickEvent.Phase.START)

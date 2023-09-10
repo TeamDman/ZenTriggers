@@ -6,21 +6,22 @@ import crafttweaker.api.block.IBlockState;
 import crafttweaker.api.block.IMaterial;
 import crafttweaker.api.entity.IEntityDefinition;
 import crafttweaker.api.minecraft.CraftTweakerMC;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.util.math.BlockPos;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Predicate;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenMethod;
 
 @ZenClass(ZenTriggers.ZEN_PACKAGE + ".EntityUpdatePredicateBuilder")
 @ZenRegister
 public class EntityUpdatePredicateBuilder {
+
 	private static final Random rand = new Random();
 
 	static {
@@ -34,6 +35,19 @@ public class EntityUpdatePredicateBuilder {
 		return new EntityUpdatePredicateBuilder();
 	}
 
+	private static ArrayList<BlockPos> getOffsetPositions(int expandXPos, int expandXNeg,
+		int expandYPos, int expandYNeg) {
+		ArrayList<BlockPos> offsets = new ArrayList<>();
+		for (int x = -expandYNeg; x <= expandXPos; x++) {
+			for (int dx = -expandXNeg; dx <= expandXPos; dx++) {
+				for (int y = -expandYNeg; y <= expandYPos; y++) {
+					offsets.add(new BlockPos(x, y, dx));
+				}
+			}
+		}
+		return offsets;
+	}
+
 	public boolean test(Entity entity) {
 		return predicates.stream().allMatch(p -> p.test(entity));
 	}
@@ -45,6 +59,12 @@ public class EntityUpdatePredicateBuilder {
 	}
 
 	@ZenMethod
+	public EntityUpdatePredicateBuilder isPlayer() {
+		predicates.push(entity -> entity instanceof EntityPlayer);
+		return this;
+	}
+
+	@ZenMethod
 	public EntityUpdatePredicateBuilder isInDimension(int id) {
 		predicates.push((entity) -> entity.dimension == id);
 		return this;
@@ -52,7 +72,17 @@ public class EntityUpdatePredicateBuilder {
 
 	@ZenMethod
 	public EntityUpdatePredicateBuilder isNthTick(int x) {
-		predicates.push((entity) -> entity.world.getTotalWorldTime() % x == 0);
+		int raw = EntityUpdateHandler.getRawInterval();
+		if (x % raw != 0) {
+			int next = x - x % raw + raw;
+			System.out
+				.printf(
+					"isNthTick value %d is not a multiple of the base tick rate %d! It has been adjusted to %d\n",
+					x, raw, next);
+			x = next;
+		}
+		final int dx = x;
+		predicates.push((entity) -> entity.world.getTotalWorldTime() % dx == 0);
 		return this;
 	}
 
@@ -65,7 +95,8 @@ public class EntityUpdatePredicateBuilder {
 
 	@ZenMethod
 	public EntityUpdatePredicateBuilder isInBlock(IBlock block) {
-		predicates.push((entity) -> CraftTweakerMC.getBlock(block).equals(entity.world.getBlockState(entity.getPosition()).getBlock()));
+		predicates.push((entity) -> CraftTweakerMC.getBlock(block)
+			.equals(entity.world.getBlockState(entity.getPosition()).getBlock()));
 		return this;
 	}
 
@@ -75,12 +106,14 @@ public class EntityUpdatePredicateBuilder {
 	}
 
 	@ZenMethod
-	public EntityUpdatePredicateBuilder isInBlockArea(IBlock block, int expandXPos, int expandXNeg, int expandYPos, int expandYNeg) {
-		ArrayList<BlockPos> offsets = getOffsetPositions(expandXPos, expandXNeg, expandYPos, expandYNeg);
+	public EntityUpdatePredicateBuilder isInBlockArea(IBlock block, int expandXPos, int expandXNeg,
+		int expandYPos, int expandYNeg) {
+		ArrayList<BlockPos> offsets = getOffsetPositions(expandXPos, expandXNeg, expandYPos,
+			expandYNeg);
 		predicates.push((entity) -> offsets.stream().anyMatch(offset ->
-				CraftTweakerMC.getBlock(block).equals(
-						entity.world.getBlockState(
-								entity.getPosition().add(offset)).getBlock())));
+			CraftTweakerMC.getBlock(block).equals(
+				entity.world.getBlockState(
+					entity.getPosition().add(offset)).getBlock())));
 		return this;
 	}
 
@@ -98,33 +131,27 @@ public class EntityUpdatePredicateBuilder {
 
 	@ZenMethod
 	public EntityUpdatePredicateBuilder isInBlockState(IBlockState state) {
-		predicates.push((entity) -> state.matches(CraftTweakerMC.getBlockState(entity.world.getBlockState(entity.getPosition()))));
+		predicates.push((entity) -> state.matches(
+			CraftTweakerMC.getBlockState(entity.world.getBlockState(entity.getPosition()))));
 		return this;
 	}
 
 	@ZenMethod
-	public EntityUpdatePredicateBuilder isInBlockStateArea(IBlockState state, int expandX, int expandY) {
+	public EntityUpdatePredicateBuilder isInBlockStateArea(IBlockState state, int expandX,
+		int expandY) {
 		return isInBlockStateArea(state, expandX, expandX, expandY, expandY);
 	}
 
-
 	@ZenMethod
-	public EntityUpdatePredicateBuilder isInBlockStateArea(IBlockState state, int expandXPos, int expandXNeg, int expandYPos, int expandYNeg) {
-		ArrayList<BlockPos> offsets = getOffsetPositions(expandXPos, expandXNeg, expandYPos, expandYNeg);
+	public EntityUpdatePredicateBuilder isInBlockStateArea(IBlockState state, int expandXPos,
+		int expandXNeg, int expandYPos, int expandYNeg) {
+		ArrayList<BlockPos> offsets = getOffsetPositions(expandXPos, expandXNeg, expandYPos,
+			expandYNeg);
 		predicates.push((entity) -> offsets.stream().anyMatch(offset ->
-				state.matches(CraftTweakerMC.getBlockState(
-						entity.world.getBlockState(
-								entity.getPosition().add(offset))))));
+			state.matches(CraftTweakerMC.getBlockState(
+				entity.world.getBlockState(
+					entity.getPosition().add(offset))))));
 		return this;
-	}
-
-	private static ArrayList<BlockPos> getOffsetPositions(int expandXPos, int expandXNeg, int expandYPos, int expandYNeg) {
-		ArrayList<BlockPos> offsets = new ArrayList<>();
-		for (int x = -expandYNeg; x <= expandXPos; x++)
-			for (int dx = -expandXNeg; dx <= expandXPos; dx++)
-				for (int y = -expandYNeg; y <= expandYPos; y++)
-					offsets.add(new BlockPos(x, y, dx));
-		return offsets;
 	}
 
 	@ZenMethod
@@ -136,20 +163,24 @@ public class EntityUpdatePredicateBuilder {
 	@ZenMethod
 	public EntityUpdatePredicateBuilder isInstanceOf(IEntityDefinition definition) {
 		if (definition == null || definition.getName() == null) {
-			System.out.println("Provided entity is null or has no name, can't add isInstanceOf to the chain!");
+			System.out.println(
+				"Provided entity is null or has no name, can't add isInstanceOf to the chain!");
 			predicates.push((__) -> false);
 			return this;
 		}
 
 		//noinspection ConstantConditions
-		predicates.push((entity) -> EntityList.getKey(entity) != null && definition.getId().equalsIgnoreCase(EntityList.getKey(entity).toString()));
+		predicates.push((entity) -> EntityList.getKey(entity) != null && definition.getId()
+			.equalsIgnoreCase(EntityList.getKey(entity).toString()));
 		return this;
 	}
 
 	@ZenMethod
 	public EntityUpdatePredicateBuilder isInstanceOf(String name) {
 		//noinspection ConstantConditions
-		predicates.push((entity) -> EntityList.getKey(entity) != null && EntityList.getKey(entity).toString().equalsIgnoreCase(name));
+		predicates.push(
+			(entity) -> EntityList.getKey(entity) != null && EntityList.getKey(entity).toString()
+				.equalsIgnoreCase(name));
 		return this;
 	}
 }
